@@ -14,18 +14,18 @@ app_port: 7860
 
 ![Confusion matrix on held-out PlantVillage test split](results/confusion_matrix.png)
 
-**Live demo:** https://plant-disease-live-demo.onrender.com — upload a tomato, potato, apple, or bell pepper leaf photo and get an instant disease diagnosis with confidence scores.
+**Live demo:** https://plant-disease-live-demo.onrender.com — upload a tomato, potato, or apple leaf photo and get an instant disease diagnosis with confidence scores.
 
 > **Note:** This runs on Render's free tier, which spins down after ~15 minutes of inactivity. The first request after idle time may take **30–60 seconds** to respond while the container wakes up — this is normal, not a bug.
 
 ## What this does
 
-This project is a production-style computer vision demo for **crop leaf disease screening**. A grower or agronomist uploads a smartphone photo of a leaf; a fine-tuned MobileNetV3 classifier predicts the most likely disease (or healthy status) among 17 classes across four high-value crops. The app includes a FastAPI backend with validated REST endpoints, a drag-and-drop web UI, Docker packaging, and measured inference latency.
+This project is a production-style computer vision demo for **crop leaf disease screening**. A grower or agronomist uploads a smartphone photo of a leaf; a fine-tuned MobileNetV3 classifier predicts the most likely disease (or healthy status) among **17 classes across tomato, potato, and apple** (see [Known limitations](#known-limitations) for bell pepper). The app includes a FastAPI backend with validated REST endpoints, a drag-and-drop web UI, Docker packaging, and measured inference latency.
 
 ## Why I built it this way
 
 - **Task choice:** Plant disease detection is a concrete B2B/ag-tech use case (early intervention saves yield), easy to demo visually, and maps cleanly to image classification.
-- **Fine-tuned, not generic:** The model is adapted on a focused PlantVillage subset (tomato, potato, apple, bell pepper) rather than shipping a raw ImageNet checkpoint.
+- **Fine-tuned, not generic:** The model is adapted on a focused PlantVillage subset (tomato, potato, apple; bell pepper was intended but see limitations below) rather than shipping a raw ImageNet checkpoint.
 - **FastAPI + static frontend:** Separating API from UI mirrors real deployments (mobile apps, partner integrations) while keeping the demo lightweight.
 - **MobileNetV3-Small:** Small enough for CPU inference in Docker (~6 MB weights) while reaching ~90% test accuracy on the held-out split.
 - **Docker on port 7860:** Containerized for local dev and cloud deployment (Render).
@@ -92,17 +92,57 @@ Hardest classes on this subset: `Tomato___Early_blight` (F1 0.740) and `Tomato__
 
 Docker numbers include full HTTP round-trip to `POST /api/v1/predict`. Render latency reflects shared 0.1-CPU free-tier hardware; warm requests are faster after the container is awake.
 
+## Known limitations
+
+### Bell pepper is not in the trained model
+
+`scripts/prepare_data.py` includes `Pepper_bell` in `FOCUS_CROPS`, but PlantVillage labels use the prefix **`Pepper,_bell`** (with a comma). The crop filter never matched, so **zero bell pepper images** were written to the training manifest and **no pepper classes** appear in `models/class_labels.json`.
+
+| Crop | Train images | Test images | Classes in model |
+|---|---:|---:|---:|
+| Tomato | 1,200 | 1,146 | 10 |
+| Potato | 360 | 272 | 3 |
+| Apple | 480 | 412 | 4 |
+| Bell pepper | **0** | **0** | **0** |
+
+Per-class counts for the three trained crops (cap: 120 images/class in train, except where the test split has fewer available):
+
+| Class | Train | Test |
+|---|---:|---:|
+| Tomato___Bacterial_spot | 120 | 120 |
+| Tomato___Early_blight | 120 | 120 |
+| Tomato___Late_blight | 120 | 120 |
+| Tomato___Leaf_Mold | 120 | 120 |
+| Tomato___Septoria_leaf_spot | 120 | 120 |
+| Tomato___Spider_mites Two-spotted_spider_mite | 120 | 120 |
+| Tomato___Target_Spot | 120 | 120 |
+| Tomato___Tomato_Yellow_Leaf_Curl_Virus | 120 | 120 |
+| Tomato___Tomato_mosaic_virus | 120 | 66 |
+| Tomato___healthy | 120 | 120 |
+| Potato___Early_blight | 120 | 120 |
+| Potato___Late_blight | 120 | 120 |
+| Potato___healthy | 120 | 32 |
+| Apple___Apple_scab | 120 | 120 |
+| Apple___Black_rot | 120 | 120 |
+| Apple___Cedar_apple_rust | 120 | 52 |
+| Apple___healthy | 120 | 120 |
+| Pepper,_bell___Bacterial_spot | 0 | 0 |
+| Pepper,_bell___healthy | 0 | 0 |
+
+Bell pepper uploads are classified into tomato/potato/apple classes instead, which explains low-confidence or incorrect predictions (~78% in manual testing). This is a data-prep bug, not a deployment issue. The UI still mentions bell pepper in places and should be updated in a future pass.
+
 ## What I'd improve with more time
 
+- Fix the `Pepper,_bell` label mismatch and retrain with bell pepper classes included.
 - Add Grad-CAM heatmaps so users see *where* the model looked on the leaf.
-- Expand crops (corn, grape) and collect field photos to reduce domain shift vs. lab backgrounds.
+- Collect field photos to reduce domain shift vs. lab backgrounds.
 - Add rate limiting, request IDs, and structured logging (OpenTelemetry) for real production traffic.
 - Serve ONNX/TensorRT exports for edge devices in greenhouses.
 
 ## Tech stack
 
 - Python 3.12, PyTorch 2.9, torchvision, MobileNetV3-Small
-- PlantVillage dataset (tomato / potato / apple / bell pepper subset)
+- PlantVillage dataset (tomato / potato / apple subset; bell pepper intended but excluded — see limitations)
 - FastAPI, Pydantic, Uvicorn
 - HTML/CSS/JS frontend
 - Docker, Render
