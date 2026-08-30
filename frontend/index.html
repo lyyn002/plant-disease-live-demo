@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Plant Disease Live Demo</title>
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+  <body>
+    <main class="container">
+      <header>
+        <p class="eyebrow">Crop health screening</p>
+        <h1>Leaf Disease Detector</h1>
+        <p class="subtitle">
+          Upload a photo of a tomato, potato, apple, or bell pepper leaf. The model suggests likely diseases so growers can act early.
+        </p>
+      </header>
+
+      <section class="panel upload-panel">
+        <label class="dropzone" id="dropzone" for="file-input">
+          <input id="file-input" type="file" accept="image/jpeg,image/png,image/webp" hidden />
+          <span class="dropzone-title">Drop a leaf photo here</span>
+          <span class="dropzone-hint">or click to browse (JPEG, PNG, WebP up to 10 MB)</span>
+        </label>
+        <button id="predict-btn" type="button" disabled>Analyze leaf</button>
+      </section>
+
+      <section class="results-grid hidden" id="results">
+        <article class="panel preview-panel">
+          <h2>Uploaded image</h2>
+          <img id="preview" alt="Uploaded leaf preview" />
+        </article>
+        <article class="panel prediction-panel">
+          <h2>Diagnosis</h2>
+          <div id="primary-result" class="primary-result"></div>
+          <ul id="top-k" class="top-k"></ul>
+          <p id="latency" class="latency"></p>
+        </article>
+      </section>
+
+      <p id="error" class="error hidden"></p>
+    </main>
+    <script src="/static/app.js"></script>
+  </body>
+</html>

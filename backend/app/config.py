@@ -17,7 +17,7 @@ ALLOWED_CONTENT_TYPES = {"image/jpeg", "image/png", "image/webp"}
 class Settings(BaseSettings):
     """Runtime settings loaded from environment variables."""
 
-    model_config = SettingsConfigDict(env_prefix="PLANT_DEMO_")
+    model_config = SettingsConfigDict(env_prefix="PLANT_DEMO_", protected_namespaces=("settings_",))
 
     host: str = "0.0.0.0"
     port: int = 7860

@@ -1,10 +1,12 @@
 """Pydantic request/response schemas."""
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class HealthResponse(BaseModel):
     """Service health check response."""
+
+    model_config = ConfigDict(protected_namespaces=())
 
     status: str = Field(..., examples=["ok"])
     model_loaded: bool
