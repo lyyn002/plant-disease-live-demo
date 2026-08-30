@@ -1,0 +1,70 @@
+{
+  "Apple___Apple_scab": {
+    "crop": "Apple",
+    "disease": "Apple scab"
+  },
+  "Apple___Black_rot": {
+    "crop": "Apple",
+    "disease": "Black rot"
+  },
+  "Apple___Cedar_apple_rust": {
+    "crop": "Apple",
+    "disease": "Cedar apple rust"
+  },
+  "Apple___healthy": {
+    "crop": "Apple",
+    "disease": "healthy"
+  },
+  "Potato___Early_blight": {
+    "crop": "Potato",
+    "disease": "Early blight"
+  },
+  "Potato___Late_blight": {
+    "crop": "Potato",
+    "disease": "Late blight"
+  },
+  "Potato___healthy": {
+    "crop": "Potato",
+    "disease": "healthy"
+  },
+  "Tomato___Bacterial_spot": {
+    "crop": "Tomato",
+    "disease": "Bacterial spot"
+  },
+  "Tomato___Early_blight": {
+    "crop": "Tomato",
+    "disease": "Early blight"
+  },
+  "Tomato___Late_blight": {
+    "crop": "Tomato",
+    "disease": "Late blight"
+  },
+  "Tomato___Leaf_Mold": {
+    "crop": "Tomato",
+    "disease": "Leaf Mold"
+  },
+  "Tomato___Septoria_leaf_spot": {
+    "crop": "Tomato",
+    "disease": "Septoria leaf spot"
+  },
+  "Tomato___Spider_mites Two-spotted_spider_mite": {
+    "crop": "Tomato",
+    "disease": "Spider mites Two-spotted spider mite"
+  },
+  "Tomato___Target_Spot": {
+    "crop": "Tomato",
+    "disease": "Target Spot"
+  },
+  "Tomato___Tomato_Yellow_Leaf_Curl_Virus": {
+    "crop": "Tomato",
+    "disease": "Tomato Yellow Leaf Curl Virus"
+  },
+  "Tomato___Tomato_mosaic_virus": {
+    "crop": "Tomato",
+    "disease": "Tomato mosaic virus"
+  },
+  "Tomato___healthy": {
+    "crop": "Tomato",
+    "disease": "healthy"
+  }
+}
