@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.env
+
+# Data & large artifacts
+data/
+checkpoints/
+*.pt
+*.pth
+!models/plant_disease_mobilenetv3.pt
+
+# Logs
+*.log
+
+# IDE
+.idea/
+.vscode/
+.DS_Store
+
+# Docker
+.docker/
