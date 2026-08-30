@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: plant-disease-live-demo
+    runtime: docker
+    plan: free
+    region: frankfurt
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /health
+    autoDeploy: true
