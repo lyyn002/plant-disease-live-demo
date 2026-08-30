@@ -11,10 +11,11 @@ from pathlib import Path
 import numpy as np
 import torch
 import torch.nn as nn
-from datasets import load_dataset
 from PIL import Image
 from torch.utils.data import DataLoader, Dataset
 from torchvision import models, transforms
+
+from scripts.prepare_data import write_manifest
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 MODELS_DIR = PROJECT_ROOT / "models"
@@ -36,10 +37,8 @@ class PlantVillageSubset(Dataset):
 
     def __getitem__(self, index: int) -> tuple[torch.Tensor, int]:
         row = self.rows[index]
-        image = row["image"]
-        if not isinstance(image, Image.Image):
-            image = Image.fromarray(np.array(image))
-        tensor = self.transform(image.convert("RGB"))
+        image = Image.open(row["image_path"]).convert("RGB")
+        tensor = self.transform(image)
         return tensor, row["label_id"]
 
 
@@ -70,9 +69,13 @@ def build_dataloaders(
     batch_size: int,
 ) -> tuple[DataLoader, DataLoader, list[str], dict[str, dict[str, str]]]:
     """Load PlantVillage and build train/validation loaders."""
-    dataset = load_dataset("mohanty/PlantVillage", "color")
-    train_rows = filter_rows(list(dataset["train"]), FOCUS_CROPS, max_per_class)
-    test_rows = filter_rows(list(dataset["test"]), FOCUS_CROPS, max_per_class)
+    manifest_path = PROJECT_ROOT / "data" / "plantvillage" / "manifest.json"
+    if not manifest_path.exists():
+        write_manifest(max_per_class=max_per_class)
+    with manifest_path.open(encoding="utf-8") as handle:
+        manifest = json.load(handle)
+    train_rows = manifest["train"]
+    test_rows = manifest["test"]
 
     class_names = sorted({row["label"] for row in train_rows})
     label_to_id = {name: index for index, name in enumerate(class_names)}
