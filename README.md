@@ -10,11 +10,13 @@ app_port: 7860
 
 # Plant Disease Live Demo
 
-[![Live Demo](https://img.shields.io/badge/Live%20Demo-Open%20in%20Browser-brightgreen)](https://18701aa1cf5e1c.lhr.life)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Open%20in%20Browser-brightgreen)](https://plant-disease-live-demo.onrender.com)
 
 ![Confusion matrix on held-out PlantVillage test split](results/confusion_matrix.png)
 
-**Live demo:** https://18701aa1cf5e1c.lhr.life — upload a tomato, potato, apple, or bell pepper leaf photo and get an instant disease diagnosis with confidence scores.
+**Live demo:** https://plant-disease-live-demo.onrender.com — upload a tomato, potato, apple, or bell pepper leaf photo and get an instant disease diagnosis with confidence scores.
+
+> **Note:** This runs on Render's free tier, which spins down after ~15 minutes of inactivity. The first request after idle time may take **30–60 seconds** to respond while the container wakes up — this is normal, not a bug.
 
 ## What this does
 
@@ -26,7 +28,7 @@ This project is a production-style computer vision demo for **crop leaf disease 
 - **Fine-tuned, not generic:** The model is adapted on a focused PlantVillage subset (tomato, potato, apple, bell pepper) rather than shipping a raw ImageNet checkpoint.
 - **FastAPI + static frontend:** Separating API from UI mirrors real deployments (mobile apps, partner integrations) while keeping the demo lightweight.
 - **MobileNetV3-Small:** Small enough for CPU inference in Docker (~6 MB weights) while reaching ~90% test accuracy on the held-out split.
-- **Docker on port 7860:** Matches Hugging Face Spaces conventions for one-command cloud deployment.
+- **Docker on port 7860:** Containerized for local dev and cloud deployment (Render).
 
 ## Setup / how to run
 
@@ -58,12 +60,15 @@ docker run --rm -p 7860:7860 plant-disease-live-demo
 
 Verified locally: `docker build` succeeds and `docker run` serves `/health` with `model_loaded: true`.
 
-### Deploy to Hugging Face Spaces (permanent URL)
+### Deploy to Render
 
-```bash
-export HF_TOKEN=hf_...   # write token from https://huggingface.co/settings/tokens
-./scripts/deploy_hf.sh
-```
+The app is deployed at [plant-disease-live-demo.onrender.com](https://plant-disease-live-demo.onrender.com) via Docker. To redeploy from scratch:
+
+1. Push this repo to GitHub.
+2. In [Render](https://dashboard.render.com), create a **Web Service** → connect the repo → choose **Docker** → **Free** instance.
+3. Leave **Root Directory** empty; set **Dockerfile Path** to `Dockerfile`.
+
+Or use the included `render.yaml` blueprint for one-click setup.
 
 ## Results (measured on this machine)
 
@@ -81,14 +86,14 @@ Hardest classes on this subset: `Tomato___Early_blight` (F1 0.740) and `Tomato__
 
 | Environment | Mean | P95 |
 |---|---:|---:|
-| Docker container (production path) | **5.57 ms** | **5.88 ms** |
+| Render (live, CPU free tier) | **4016 ms** | — |
+| Docker container (local) | **5.57 ms** | **5.88 ms** |
 | Local MPS (dev hardware) | 4.03 ms | 4.38 ms |
 
-Docker numbers include full HTTP round-trip to `POST /api/v1/predict` against the running container.
+Docker numbers include full HTTP round-trip to `POST /api/v1/predict`. Render latency reflects shared 0.1-CPU free-tier hardware; warm requests are faster after the container is awake.
 
 ## What I'd improve with more time
 
-- Deploy permanently to Hugging Face Spaces with GPU hardware class for heavier models.
 - Add Grad-CAM heatmaps so users see *where* the model looked on the leaf.
 - Expand crops (corn, grape) and collect field photos to reduce domain shift vs. lab backgrounds.
 - Add rate limiting, request IDs, and structured logging (OpenTelemetry) for real production traffic.
@@ -100,5 +105,5 @@ Docker numbers include full HTTP round-trip to `POST /api/v1/predict` against th
 - PlantVillage dataset (tomato / potato / apple / bell pepper subset)
 - FastAPI, Pydantic, Uvicorn
 - HTML/CSS/JS frontend
-- Docker, Hugging Face Spaces (Docker SDK)
+- Docker, Render
 - scikit-learn (evaluation), matplotlib/seaborn (plots)
