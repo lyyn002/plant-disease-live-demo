@@ -10,11 +10,11 @@ app_port: 7860
 
 # Plant Disease Live Demo
 
-[![Live Demo](https://img.shields.io/badge/Live%20Demo-Open%20in%20Browser-brightgreen)](https://c72832801bedc8.lhr.life)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Open%20in%20Browser-brightgreen)](https://18701aa1cf5e1c.lhr.life)
 
 ![Confusion matrix on held-out PlantVillage test split](results/confusion_matrix.png)
 
-**Live demo:** https://c72832801bedc8.lhr.life — upload a tomato, potato, apple, or bell pepper leaf photo and get an instant disease diagnosis with confidence scores.
+**Live demo:** https://18701aa1cf5e1c.lhr.life — upload a tomato, potato, apple, or bell pepper leaf photo and get an instant disease diagnosis with confidence scores.
 
 ## What this does
 
